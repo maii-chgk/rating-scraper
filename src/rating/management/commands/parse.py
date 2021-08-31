@@ -5,7 +5,7 @@ from rating.models import *
 
 
 def get_town_venue(url):
-    t_response = requests.get(url)
+    t_response = requests.get(url, timeout=10)
     t_data = json.loads(t_response.text)['town']
 
     # проверяем есть ли у нас в базе страна команды
@@ -47,7 +47,7 @@ def get_town_venue(url):
 
 
 def get_town(url):
-    t_response = requests.get(url)
+    t_response = requests.get(url, timeout=10)
     t_data = json.loads(t_response.text)
 
     # проверяем есть ли у нас в базе страна команды
@@ -94,7 +94,7 @@ def parse_tournaments(t_id, t_id_end):
         # парсим данные о турнире
         print("Парсим турнир:", i)
         tournament_url = "http://api.rating.chgk.net/tournaments/" + str(i)
-        tournament_response = requests.get(tournament_url)
+        tournament_response = requests.get(tournament_url, timeout=10)
         tournament_data = json.loads(tournament_response.text)
 
         # берём тип турнира, если в базе ещё нет - создаём
@@ -142,7 +142,7 @@ def parse_tournaments(t_id, t_id_end):
 
         # парсим результаты турнира
         url = "http://api.rating.chgk.net/tournaments/" + str(i) +"/results?includeTeamMembers=1&includeMasksAndControversials=1&includeTeamFlags=1&includeRatingB=1"
-        response = requests.get(url)
+        response = requests.get(url, timeout=20)
         data = json.loads(response.text)
         for result in data:
             # тянем информация о городе
