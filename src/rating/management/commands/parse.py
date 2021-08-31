@@ -198,7 +198,7 @@ def parse_tournaments(t_id, t_id_end):
             except TypeError:
                 total = 0
             try:
-                position = int(result['position'])
+                position = float(result['position'])
             except TypeError:
                 position = 0
             db_result, is_updated = Result.objects.update_or_create(

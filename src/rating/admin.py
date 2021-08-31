@@ -83,7 +83,7 @@ class OldteamratingAdmin(admin.ModelAdmin):
 
 class ResultAdmin(admin.ModelAdmin):
     list_display = ('tournament', '__date__', 'team', 'position', 'total', 'mask')
-    search_fields = ["tournament","team"]
+    search_fields = ["tournament__title","team__title"]
     raw_id_fields = ['team', 'tournament', 'teamMembers', 'syncrequest']
 
 

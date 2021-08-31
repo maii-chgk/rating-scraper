@@ -127,7 +127,7 @@ class Result(models.Model):
     team_title = models.CharField(max_length=250)
     total = models.IntegerField(default=0)
     syncrequest = models.ForeignKey(Syncrequest, on_delete=models.CASCADE, null=True, blank=True)
-    position = models.IntegerField(default=0)
+    position = models.DecimalField(max_digits=5, decimal_places=1)
     teamMembers = models.ManyToManyField(Player)
     composite_mu = models.FloatField(default=0)
     composite_sigma = models.FloatField(default=0)
