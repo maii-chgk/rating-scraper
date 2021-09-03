@@ -158,7 +158,6 @@ def parse_tournaments(t_id, t_id_end, maii=False):
         response = requests.get(url, timeout=20)
         data = json.loads(response.text)
         for result in data:
-            print(result)
             # тянем информация о городе
             try:
                 t_url = "http://api.rating.chgk.net/towns/" + str(result['team']['town']['id'])
