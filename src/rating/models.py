@@ -103,6 +103,11 @@ class Tournament(models.Model):
     orgcommittee = models.ManyToManyField(Player)
     questionQty = JSONField(null=True, default=dict)
     teams = models.IntegerField(default=0)
+    maiiAegis = models.BooleanField(default=False)
+    maiiAegisUpdatedAt = models.DateTimeField(null=True)
+    maiiRating = models.BooleanField(default=False)
+    maiiRatingUpdatedAt = models.DateTimeField(null=True)
+
 
     class Meta:
         ordering = ('-end_datetime', '-start_datetime', '-id')

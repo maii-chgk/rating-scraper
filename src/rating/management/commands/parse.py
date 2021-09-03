@@ -89,8 +89,17 @@ def get_town(url):
 
 
 
-def parse_tournaments(t_id, t_id_end):
-    for i in range (t_id, t_id_end+1, 1):
+def parse_tournaments(t_id, t_id_end, maii=False):
+    if maii:
+        maii_tournament_url = "http://api.rating.chgk.net/tournaments.json?properties.maiiRating=true"
+        maii_tournament_response = requests.get(maii_tournament_url, timeout=10)
+        maii_tournament_data = json.loads(maii_tournament_response.text)
+        parse_range = []
+        for tournament in maii_tournament_data:
+            parse_range.append(tournament['id'])
+    else:
+        parse_range = [*range(t_id, t_id_end+1, 1)]
+    for i in parse_range:
         # парсим данные о турнире
         print("Парсим турнир:", i)
         tournament_url = "http://api.rating.chgk.net/tournaments/" + str(i)
@@ -121,6 +130,10 @@ def parse_tournaments(t_id, t_id_end):
                     'end_datetime': tournament_data['dateEnd'],
                     'questionQty': json.dumps(tournament_data['questionQty']),
                     'typeoft': typeoft,
+                    'maiiAegis': tournament_data['maiiAegis'],
+                    'maiiRating': tournament_data['maiiRating'],
+                    'maiiAegisUpdatedAt': tournament_data['maiiAegisUpdatedAt'],
+                    'maiiRatingUpdatedAt': tournament_data['maiiRatingUpdatedAt']
                 },
             )
         except Exception as e:
@@ -145,6 +158,7 @@ def parse_tournaments(t_id, t_id_end):
         response = requests.get(url, timeout=20)
         data = json.loads(response.text)
         for result in data:
+            print(result)
             # тянем информация о городе
             try:
                 t_url = "http://api.rating.chgk.net/towns/" + str(result['team']['town']['id'])
@@ -276,8 +290,17 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("-i", "--t_id", type=int)
         parser.add_argument("-e", "--t_id_end", type=int)
+        parser.add_argument(
+            '--maii',
+            action='store_true',
+            help='Delete poll instead of closing it',
+        )
 
     def handle(self, *args, **kwargs):
+        if kwargs["maii"]:
+            parse_tournaments(0, 0, maii=True)
+            exit()
         t_id = kwargs["t_id"]
         t_id_end = kwargs["t_id_end"]
+        
         parse_tournaments(t_id, t_id_end)
