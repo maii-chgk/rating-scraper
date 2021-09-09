@@ -87,6 +87,14 @@ class ResultAdmin(admin.ModelAdmin):
     raw_id_fields = ['team', 'tournament', 'teamMembers', 'syncrequest']
 
 
+class SeasonAdmin(admin.ModelAdmin):
+    list_display = ('id', 'start', 'end')
+
+
+class BasesquadAdmin(admin.ModelAdmin):
+    list_display = ('season', 'team', 'player')
+
+
 admin.site.register(Tournament, TournamentAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Player, PlayerAdmin)
@@ -99,3 +107,5 @@ admin.site.register(Typeoft, TypeoftAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Oldrating, OldratingAdmin)
 admin.site.register(Oldteamrating, OldteamratingAdmin)
+admin.site.register(Season, SeasonAdmin)
+admin.site.register(Basesquad, BasesquadAdmin)

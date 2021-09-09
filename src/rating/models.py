@@ -85,6 +85,35 @@ class Team(models.Model):
         return self.title
 
 
+class Season(models.Model):
+    id = models.IntegerField(primary_key=True)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+    class Meta:
+        ordering = ('-end',)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Basesquad(models.Model):
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    iscaptain = models.BooleanField(default=False)
+    start = models.DateTimeField()
+    end = models.DateTimeField(null=True)
+
+    class Meta:
+        unique_together = [['season', 'team', 'player']]
+        ordering = ('-season__id',)
+
+    def __str__(self):
+        return self.team.title + ' ' + str(self.season.id)
+
+
+
 # типы турниров
 class Typeoft(models.Model):
     id = models.IntegerField(primary_key=True)
