@@ -18,15 +18,18 @@ def parse_squads(start, end):
         response = requests.get(url, timeout=10)
         data = json.loads(response.text)
         for season in data:
-            basesquad, is_updated = Basesquad.objects.update_or_create(
-                season_id = season['idseason'],
-                team_id = season['idteam'],
-                player = player,
-                defaults={
-                    'iscaptain': season['is_captain'],
-                    'start': season['added_since'],
-                },
-            )
+            try:
+                basesquad, is_updated = Basesquad.objects.update_or_create(
+                    season_id = season['idseason'],
+                    team_id = season['idteam'],
+                    player = player,
+                    defaults={
+                        'iscaptain': season['is_captain'],
+                        'start': season['added_since'],
+                    },
+                )
+            except:
+                print("Нет сыгранных турниров, пропускаем:", season['idseason'])
         print("Разпарсили игрока:", i)
 
 
