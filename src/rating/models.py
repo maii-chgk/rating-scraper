@@ -102,8 +102,8 @@ class Basesquad(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     iscaptain = models.BooleanField(default=False)
-    start = models.DateTimeField()
-    end = models.DateTimeField(null=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True)
 
     class Meta:
         unique_together = [['season', 'team', 'player']]
@@ -134,7 +134,7 @@ class Tournament(models.Model):
     teams = models.IntegerField(default=0)
     maiiAegis = models.BooleanField(default=False)
     maiiAegisUpdatedAt = models.DateTimeField(null=True)
-    maiiRating = models.BooleanField(default=False)
+    maii_rating = models.BooleanField(default=False)
     maiiRatingUpdatedAt = models.DateTimeField(null=True)
 
 
