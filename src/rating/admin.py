@@ -93,6 +93,7 @@ class SeasonAdmin(admin.ModelAdmin):
 
 class BasesquadAdmin(admin.ModelAdmin):
     list_display = ('season', 'team', 'player')
+    search_fields = ["player__last_name","team__title"]
 
 
 admin.site.register(Tournament, TournamentAdmin)
