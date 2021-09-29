@@ -25,12 +25,12 @@ def parse_squads(start, end):
                     player = player,
                     defaults={
                         'iscaptain': season['is_captain'],
-                        'start': season['added_since'],
+                        'start_date': season['added_since'],
                     },
                 )
             except:
                 print("Нет сыгранных турниров, пропускаем:", season['idseason'])
-        print("Разпарсили игрока:", i)
+        print("Распарсили игрока:", i)
 
 
 class Command(BaseCommand):

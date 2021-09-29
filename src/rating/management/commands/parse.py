@@ -132,7 +132,7 @@ def parse_tournaments(t_id, t_id_end, maii=False):
                     'questionQty': json.dumps(tournament_data['questionQty']),
                     'typeoft': typeoft,
                     'maiiAegis': tournament_data['maiiAegis'],
-                    'maiiRating': tournament_data['maiiRating'],
+                    'maii_rating': tournament_data['maiiRating'],
                     'maiiAegisUpdatedAt': tournament_data['maiiAegisUpdatedAt'],
                     'maiiRatingUpdatedAt': tournament_data['maiiRatingUpdatedAt']
                 },
