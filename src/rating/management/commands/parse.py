@@ -158,6 +158,19 @@ def parse_tournaments(t_id, t_id_end, maii=False):
         url = "http://api.rating.chgk.net/tournaments/" + str(i) +"/results?includeTeamMembers=1&includeMasksAndControversials=1&includeTeamFlags=1&includeRatingB=1"
         response = requests.get(url, timeout=20)
         data = json.loads(response.text)
+
+        # ищем не удалили ли результаты каких-то команд с турнирного сайта
+        # берем результаты из своей базы
+        db_results = list(Result.objects.filter(tournament=tournament).values_list('team__id',flat=True))
+        # берем результаты отданные в API
+        t_site_results = []
+        for result in data:
+            t_site_results.append(result['team']['id'])
+        # смотрим что есть лишнего у нас
+        diff_results = list(set(db_results) - set(t_site_results))
+        # удаляем лишние результаты из базы
+        Result.objects.filter(tournament=tournament, team__id__in=diff_results).delete()
+
         for result in data:
             # тянем информация о городе
             try:
@@ -258,6 +271,12 @@ def parse_tournaments(t_id, t_id_end, maii=False):
                         'flag': teammember['flag'],
                     },
                 )
+
+            # удаляем oldrating для игроков убранных из составов команд на турнирном сайте
+            for oldrating in Oldrating.objects.filter(result=db_result):
+                if oldrating.player not in db_result.teamMembers.all():
+                    oldrating.delete()
+            
             # фиксируем старый командный рейтинг для сравнения моделей в будущем
             inRating = False
             try:
