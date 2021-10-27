@@ -87,8 +87,8 @@ class Team(models.Model):
 
 class Season(models.Model):
     id = models.IntegerField(primary_key=True)
-    start = models.DateTimeField()
-    end = models.DateTimeField()
+    start = models.DateField()
+    end = models.DateField()
 
     class Meta:
         ordering = ('-end',)
