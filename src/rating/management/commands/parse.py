@@ -1,5 +1,7 @@
 import requests
 import json
+import pytz
+import tzlocal
 from django.core.management.base import BaseCommand
 from rating.models import *
 
@@ -89,7 +91,7 @@ def get_town(url):
 
 
 
-def parse_tournaments(t_id, t_id_end, maii=False):
+def parse_tournaments(t_id, t_id_end, maii=False, force=False):
     if maii:
         parse_range = []
         for j in range(1, 11, 1):
@@ -108,11 +110,28 @@ def parse_tournaments(t_id, t_id_end, maii=False):
         tournament_data = json.loads(tournament_response.text)
 
         # берём тип турнира, если в базе ещё нет - создаём
-
         try:
             typeoft = Typeoft.objects.filter(id=tournament_data['type']['id']).first()
         except TypeError:
+            # ловим турниры которых нет на турнирном сайте, если мы парсим по диапазону и пропускаем отсутсвующий id
             continue
+
+        # сравниваем дату обновления на турнирном сайте, с датой, которая у нас в базе
+        local_timezone = tzlocal.get_localzone()
+        end_datetime_to_compare = datetime.strptime(
+            tournament_data['lastEditDate'], '%Y-%m-%dT%H:%M:%S%z'
+            ).astimezone(local_timezone).replace(tzinfo=None)
+
+        try:
+            t_end_datetime_to_compare = Tournament.objects.filter(id=tournament_data['id']).first().edit_datetime
+            if end_datetime_to_compare == t_end_datetime_to_compare and not force:
+                # если турнир не обновлялся, пропускаем его
+                print(tournament_data['name'], "- турнир не обновлялся")
+                continue
+        except AttributeError:
+            # если турнир новый и его ещё нет у нас в базе, продолжаем flow
+            pass
+
         if not typeoft:
             typeoft, is_updated = Typeoft.objects.update_or_create(
                 id=tournament_data['type']['id'],
@@ -121,7 +140,7 @@ def parse_tournaments(t_id, t_id_end, maii=False):
                 },
             )
 
-        # обновляем данные по самому турниру
+        # обновляем данные по самому турниру, кроме даты обновления, чтобы не получить неполные данные, если парсер прервется
         try:
             tournament, is_updated = Tournament.objects.update_or_create(
                 id=tournament_data['id'],
@@ -302,6 +321,9 @@ def parse_tournaments(t_id, t_id_end, maii=False):
             )
 
             print(team, "|", tournament, tournament.id)
+
+        tournament.edit_datetime = tournament_data['lastEditDate']
+        tournament.save()
         print("done: ", i)
 
 
@@ -309,17 +331,17 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("-i", "--t_id", type=int)
         parser.add_argument("-e", "--t_id_end", type=int)
-        parser.add_argument(
-            '--maii',
-            action='store_true',
-            help='Delete poll instead of closing it',
-        )
+        parser.add_argument('--maii', action='store_true')
+        parser.add_argument('--force', action='store_true')
 
     def handle(self, *args, **kwargs):
+        maii = False
+        force = False
         if kwargs["maii"]:
-            parse_tournaments(0, 0, maii=True)
-            exit()
+            maii = True
+        if kwargs["force"]:
+            force = True
         t_id = kwargs["t_id"]
         t_id_end = kwargs["t_id_end"]
-        
-        parse_tournaments(t_id, t_id_end)
+
+        parse_tournaments(t_id, t_id_end, maii, force)

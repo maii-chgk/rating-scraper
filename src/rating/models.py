@@ -128,6 +128,7 @@ class Tournament(models.Model):
     title = models.CharField(max_length=100)
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
+    edit_datetime = models.DateTimeField(null=True)
     typeoft = models.ForeignKey(Typeoft, on_delete=models.CASCADE)
     orgcommittee = models.ManyToManyField(Player)
     questionQty = JSONField(null=True, default=dict)
