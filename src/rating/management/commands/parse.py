@@ -106,7 +106,7 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
         # парсим данные о турнире
         print("Парсим турнир:", i)
         tournament_url = "http://api.rating.chgk.net/tournaments/" + str(i)
-        tournament_response = requests.get(tournament_url, timeout=10)
+        tournament_response = requests.get(tournament_url, timeout=10, headers={"accept":"application/json"})
         tournament_data = json.loads(tournament_response.text)
 
         # берём тип турнира, если в базе ещё нет - создаём
