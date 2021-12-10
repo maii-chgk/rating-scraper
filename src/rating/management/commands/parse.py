@@ -2,8 +2,12 @@ import requests
 import json
 import pytz
 import tzlocal
+import os
 from django.core.management.base import BaseCommand
+from honeybadger import honeybadger
 from rating.models import *
+
+honeybadger.configure(api_key=os.environ.get('HONEYBADGER_API_KEY'))
 
 
 def get_town_venue(url):

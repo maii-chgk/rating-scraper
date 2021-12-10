@@ -5,3 +5,4 @@ requests
 django-environ
 pytz
 tzlocal
+honeybadger==0.8.0
