@@ -7,7 +7,7 @@ from rating.models import *
 
 
 def get_town_venue(url):
-    t_response = requests.get(url, timeout=10)
+    t_response = requests.get(url, timeout=10, headers={"accept":"application/json"})
     t_data = json.loads(t_response.text)['town']
 
     # проверяем есть ли у нас в базе страна команды
@@ -49,7 +49,7 @@ def get_town_venue(url):
 
 
 def get_town(url):
-    t_response = requests.get(url, timeout=10)
+    t_response = requests.get(url, timeout=10, headers={"accept":"application/json"})
     t_data = json.loads(t_response.text)
 
     # проверяем есть ли у нас в базе страна команды
@@ -96,7 +96,7 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
         parse_range = []
         for j in range(1, 11, 1):
             maii_tournament_url = "http://api.rating.chgk.net/tournaments.json?properties.maiiRating=true&page=" + str(j)
-            maii_tournament_response = requests.get(maii_tournament_url, timeout=10)
+            maii_tournament_response = requests.get(maii_tournament_url, timeout=10, headers={"accept":"application/json"})
             maii_tournament_data = json.loads(maii_tournament_response.text)
             for tournament in maii_tournament_data:
                 parse_range.append(tournament['id'])
@@ -175,7 +175,7 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
 
         # парсим результаты турнира
         url = "http://api.rating.chgk.net/tournaments/" + str(i) +"/results?includeTeamMembers=1&includeMasksAndControversials=1&includeTeamFlags=1&includeRatingB=1"
-        response = requests.get(url, timeout=20)
+        response = requests.get(url, timeout=20, headers={"accept":"application/json"})
         data = json.loads(response.text)
 
         # ищем не удалили ли результаты каких-то команд с турнирного сайта
@@ -257,6 +257,7 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
                     'position': position,
                 },
             )
+            
             # прописываем флаги
             db_result.flags.clear()
             for flag in result['flags']:
@@ -302,6 +303,7 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
                 if result['rating']['inRating']:
                     inRating = True
             except TypeError:
+                print(db_result.team_title, db_result.mask,db_result.total,db_result.position, "|", tournament, tournament.id)
                 continue
             rating, is_updated = Oldteamrating.objects.update_or_create(
                 result=db_result,
@@ -319,8 +321,7 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
                     'd': result['rating']['d'],
                 },
             )
-
-            print(team, "|", tournament, tournament.id)
+            print(db_result.team_title, db_result.mask,db_result.total,db_result.position, "|", tournament, tournament.id)
 
         tournament.edit_datetime = tournament_data['lastEditDate']
         tournament.save()
