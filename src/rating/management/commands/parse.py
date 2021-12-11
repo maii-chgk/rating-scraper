@@ -361,5 +361,7 @@ class Command(BaseCommand):
         t_id = kwargs["t_id"]
         t_id_end = kwargs["t_id_end"]
         date_diff = kwargs["date_diff"]
+        if not date_diff:
+            date_diff = 0
 
         parse_tournaments(t_id, t_id_end, maii, force, date_diff)
