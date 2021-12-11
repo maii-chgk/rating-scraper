@@ -3,6 +3,7 @@ import json
 import pytz
 import tzlocal
 import os
+from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from honeybadger import honeybadger
 from rating.models import *
@@ -95,17 +96,27 @@ def get_town(url):
 
 
 
-def parse_tournaments(t_id, t_id_end, maii=False, force=False):
+def parse_tournaments(t_id, t_id_end, maii=False, force=False, date_diff=0):
     if maii:
         parse_range = []
         for j in range(1, 11, 1):
-            maii_tournament_url = "http://api.rating.chgk.net/tournaments.json?properties.maiiRating=true&page=" + str(j)
+            maii_tournament_url = "http://api.rating.chgk.net/tournaments?properties.maiiRating=true&page=" + str(j)
             maii_tournament_response = requests.get(maii_tournament_url, timeout=10, headers={"accept":"application/json"})
             maii_tournament_data = json.loads(maii_tournament_response.text)
             for tournament in maii_tournament_data:
                 parse_range.append(tournament['id'])
+    elif date_diff > 0:
+        time_from = (datetime.now()-timedelta(days=date_diff)).strftime("%Y-%m-%d")
+        parse_range = []
+        for j in range(1, 21, 1):
+            tournament_url = "http://api.rating.chgk.net/tournaments?lastEditDate%5Bafter%5D="+time_from+"&page=" + str(j)
+            tournament_response = requests.get(tournament_url, timeout=10, headers={"accept":"application/json"})
+            tournament_data = json.loads(tournament_response.text)
+            for tournament in tournament_data:
+                parse_range.append(tournament['id'])
     else:
         parse_range = [*range(t_id, t_id_end+1, 1)]
+
     for i in parse_range:
         # парсим данные о турнире
         print("Парсим турнир:", i)
@@ -334,10 +345,11 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False):
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument("-i", "--t_id", type=int)
-        parser.add_argument("-e", "--t_id_end", type=int)
+        parser.add_argument('-i', '--t_id', type=int)
+        parser.add_argument('-e', '--t_id_end', type=int)
         parser.add_argument('--maii', action='store_true')
         parser.add_argument('--force', action='store_true')
+        parser.add_argument('-d', '--date_diff', type=int)
 
     def handle(self, *args, **kwargs):
         maii = False
@@ -348,5 +360,6 @@ class Command(BaseCommand):
             force = True
         t_id = kwargs["t_id"]
         t_id_end = kwargs["t_id_end"]
+        date_diff = kwargs["date_diff"]
 
-        parse_tournaments(t_id, t_id_end, maii, force)
+        parse_tournaments(t_id, t_id_end, maii, force, date_diff)
