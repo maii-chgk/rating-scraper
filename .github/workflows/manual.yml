@@ -33,7 +33,7 @@ jobs:
       env:
         SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
-      if: github.event.inputs.force == true
+      if: ${{ github.event.inputs.force == 'true' }}
       run: |
         python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force ${{ github.event.inputs.force }}
 
@@ -41,6 +41,6 @@ jobs:
       env:
         SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
-      if: github.event.inputs.force == false
+      if: ${{ github.event.inputs.force == 'false' }}
       run: |
         python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }}
