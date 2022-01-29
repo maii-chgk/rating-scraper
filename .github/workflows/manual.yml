@@ -35,7 +35,7 @@ jobs:
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
       if: ${{ github.event.inputs.force == 'true' }}
       run: |
-        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force ${{ github.event.inputs.force }}
+        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force
 
     - name: Scrape without forced updates
       env:
