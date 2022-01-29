@@ -28,9 +28,19 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Scrape
-      run: |
-        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force ${{ github.event.inputs.force }}
-      env: 
+
+    - name: Scrape with forced updates
+      env:
         SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
+      if: github.event.inputs.force == true
+      run: |
+        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force ${{ github.event.inputs.force }}
+
+    - name: Scrape without forced updates
+      env:
+        SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
+        DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
+      if: github.event.inputs.force == false
+      run: |
+        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }}
