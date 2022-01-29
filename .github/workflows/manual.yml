@@ -1,0 +1,36 @@
+name: Scrape manually selected tournaments
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: boolean
+        description: force updates
+        required: false
+        default: false
+      first_id:
+        required: true
+        description: will scrape tournaments with IDs from first_id to last_id
+      last_id:
+        required: true
+        description: will scrape tournaments with IDs from first_id to last_id
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.10
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Scrape
+      run: |
+        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.first_id }} --force ${{ github.event.inputs.force }}
+      env: 
+        SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
+        DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
