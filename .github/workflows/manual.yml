@@ -30,7 +30,7 @@ jobs:
         pip install -r requirements.txt
     - name: Scrape
       run: |
-        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.first_id }} --force ${{ github.event.inputs.force }}
+        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force ${{ github.event.inputs.force }}
       env: 
         SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
