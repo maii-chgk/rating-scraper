@@ -3,7 +3,7 @@ name: Scrape manually selected tournaments
 on:
   workflow_dispatch:
     inputs:
-      name:
+      force:
         type: boolean
         description: force updates
         required: false
