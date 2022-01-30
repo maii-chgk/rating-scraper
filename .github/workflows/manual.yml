@@ -3,7 +3,7 @@ name: Scrape manually selected tournaments
 on:
   workflow_dispatch:
     inputs:
-      name:
+      force:
         type: boolean
         description: force updates
         required: false
@@ -33,14 +33,14 @@ jobs:
       env:
         SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
-      if: github.event.inputs.force == true
+      if: ${{ github.event.inputs.force == 'true' }}
       run: |
-        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force ${{ github.event.inputs.force }}
+        python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }} --force
 
     - name: Scrape without forced updates
       env:
         SECRET_KEY: ${{ secrets.SCRAPER_SECRET_KEY }}
         DATABASE_URL: ${{ secrets.SCRAPER_DATABASE_URL }}
-      if: github.event.inputs.force == false
+      if: ${{ github.event.inputs.force == 'false' }}
       run: |
         python src/manage.py parse --t_id ${{ github.event.inputs.first_id }} --t_id_end ${{ github.event.inputs.last_id }}

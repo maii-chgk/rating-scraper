@@ -336,7 +336,6 @@ def parse_tournaments(t_id, t_id_end, maii=False, force=False, date_diff=0):
                     'd': result['rating']['d'],
                 },
             )
-            print(db_result.team_title, db_result.mask,db_result.total,db_result.position, "|", tournament, tournament.id)
 
         tournament.edit_datetime = tournament_data['lastEditDate']
         tournament.save()
