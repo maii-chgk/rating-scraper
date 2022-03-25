@@ -99,7 +99,7 @@ def get_town(url):
 def parse_tournaments(t_id, t_id_end, maii=False, force=False, date_diff=0):
     if maii:
         parse_range = []
-        for j in range(1, 11, 1):
+        for j in range(1, 21, 1):
             maii_tournament_url = "http://api.rating.chgk.net/tournaments?properties.maiiRating=true&page=" + str(j)
             maii_tournament_response = requests.get(maii_tournament_url, timeout=10, headers={"accept":"application/json"})
             maii_tournament_data = json.loads(maii_tournament_response.text)
