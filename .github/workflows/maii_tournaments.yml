@@ -1,8 +1,6 @@
 name: Scrape MAII tournaments
 
-on:
-  schedule:
-    - cron: '10 * * * *'
+on: workflow_dispatch
 
 jobs:
   run:
